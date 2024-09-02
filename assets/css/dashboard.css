@@ -1,0 +1,61 @@
+.calendar-day {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.calendar-day:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.calendar-header {
+    font-weight: bold;
+}
+.today {
+    background-color: #549afb;
+    color: white;
+}
+@media (max-width: 600px) {
+    .calendar-header {
+        font-size: 0.75rem;
+    }
+    .calendar-day {
+        font-size: 0.75rem;
+        padding: 0.25rem;
+    }
+}
+.card {
+    background-color: #1F2937;
+    border-radius: 0.375rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 4px 0 8px rgba(139, 92, 246, 0.5);
+}
+
+.chart-container {
+    height: 300px;
+    position: relative;
+}
+
+/* Responsive adjustments for right sidebar */
+@media (max-width: 1024px) {
+    .right-sidebar {
+        width: auto;
+        position: static;
+        margin-top: 1rem;
+    }
+}
+
+/* Adjust content area when sidebar is open on large screens */
+.content-area {
+    transition: margin-left 0.3s;
+    padding: 1rem;
+    margin-left: 0;
+}

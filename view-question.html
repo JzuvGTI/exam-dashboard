@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Ujian Online</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.12.0/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white" x-data="{ open: false }" @resize.window="if (window.innerWidth >= 1024) open = true; else open = false">
+    <!-- Overlay -->
+    <div x-show="open" @click="open = false" :class="{'overlay-open': open, 'overlay': true}" class="fixed inset-0"></div>
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4 shadow-md flex justify-between items-center z-30 relative">
+        <div class="flex items-center">
+            <!-- Burger Menu Button (Visible on Mobile) -->
+            <button @click="open = !open" class="text-white mr-4 focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <!-- Logo -->
+            <div class="text-2xl font-bold">Admin Dashboard</div>
+        </div>
+        <!-- Icons and Profile Picture -->
+        <div class="flex items-center space-x-4">
+            <!-- Only show on larger screens -->
+            <div class="hidden lg:block text-sm">Admin User</div>
+            <!-- Icons (Visible on Mobile and Larger Screens) -->
+            <div class="flex space-x-4">
+                <button class="focus:outline-none">
+                    <i class="fas fa-bell text-white text-xl"></i>
+                </button>
+                <button class="focus:outline-none">
+                    <i class="fas fa-envelope text-white text-xl"></i>
+                </button>
+                <!-- Profile Image -->
+                <img src="https://via.placeholder.com/40" class="rounded-full w-10 h-10" alt="Profile Image">
+            </div>
+        </div>
+    </nav>
+
+
+    <aside :class="{'sidebar-open': open}" class="sidebar" id="sidebar">
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-picture">
+                <img src="https://via.placeholder.com/50" alt="Profile Picture">
+                <span class="status-indicator status-online"></span> <!-- Replace with status-offline for offline -->
+            </div>
+            <div>
+                <div class="username">John Doe</div>
+                <div class="role-badge">Admin</div>
+            </div>
+        </div>
+        <!-- Navigation Links -->
+        <div class="sidebar-buttons">
+            <a href="dashboard.html" class="sidebar-button"><i class="fas fa-home"></i> Beranda Situs</a>
+            <a href="add-teacher.html" class="sidebar-button"><i class="fas fa-calendar-alt"></i> Tambah Guru Mapel</a>
+            <a href="upload_soal.html" class="sidebar-button"><i class="fas fa-file-alt"></i> Soal Ujian</a>
+            <a href="view-question.html" class="sidebar-button"><i class="fas fa-graduation-cap"></i> Kursus Saya</a>
+            <a href="settings/profile.html" class="sidebar-button"><i class="fas fa-users"></i> Edit Profile</a>
+        </div>
+        <div class="sidebar-dropdown">
+            <button class="dropdown-button" onclick="toggleDropdown(this)">
+                <i class="fas fa-cog"></i> Pengaturan
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </button>
+            <div class="sidebar-dropdown-content">
+                <a href="settings/profile.html"><span class="dropdown-icon"></span> Pengaturan Akun</a>
+                <a href="#"><span class="dropdown-icon"></span> Keamanan</a>
+                <a href="#"><span class="dropdown-icon"></span> Privasi</a>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="content-area flex-1 p-4">
+        <!-- Flex Container for Questions and Navigation -->
+        <div class="flex flex-col md:flex-row w-full md:space-x-6">
+            <!-- Question Container -->
+            <div id="question-container" class="flex-1 space-y-4">
+                <!-- Question 1 -->
+                <div id="question1" class="question bg-gray-800 shadow-lg rounded-lg p-4 no-select hidden">
+                    <div class="mb-4">
+                        <p class="text-white text-sm">Soal <span class="font-bold">1</span></p>
+                        <a href="">
+                            <p class="text-gray-400 text-sm mt-2 mb-2"><i class="far fa-flag" style="color: #b1b2b4;"></i> Jawaban tersimpan</p>
+                        </a>
+                        <p class="text-gray-400 text-xs mb-3">10 Point per soal</p>
+                    </div>
+                    <!-- Teks Soal dan Gambar -->
+                    <div class="mb-4">
+                        <p class="text-white text-base">Siapa nabi terakhir?</p>
+                    </div>
+                    <!-- Pilihan Jawaban -->
+                    <div class="text-gray-400 text-sm">
+                        <p class="mb-2">Pilih salah satu:</p>
+                        <div class="flex flex-col space-y-2">
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="A">
+                                <span class="radio-label ml-2">A. Nabi Musa</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="B">
+                                <span class="radio-label ml-2">B. Nabi Isa</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="C">
+                                <span class="radio-label ml-2">C. Nabi Muhammad</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="D">
+                                <span class="radio-label ml-2">D. Nabi Nuh</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div id="question2" class="question bg-gray-800 shadow-lg rounded-lg p-4 no-select hidden">
+                    <div class="mb-4">
+                        <p class="text-white text-sm">Soal <span class="font-bold">2</span></p>
+                        <a href="">
+                            <p class="text-gray-400 text-sm mt-2 mb-2"><i class="far fa-flag" style="color: #b1b2b4;"></i> Jawaban tersimpan</p>
+                        </a>
+                        <p class="text-gray-400 text-xs mb-3">10 Point per soal</p>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-white text-base">Siapakah Nabi terakhir dalam Islam?</p>
+                    </div>
+                    <div class="text-gray-400 text-sm">
+                        <p class="mb-2">Pilih salah satu:</p>
+                        <div class="flex flex-col space-y-2">
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="A">
+                                <span class="radio-label ml-2">A. Nabi Musa AS</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="B">
+                                <span class="radio-label ml-2">B. Nabi Isa AS</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="C">
+                                <span class="radio-label ml-2">C. Nabi Muhammad SAW</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question2" value="D">
+                                <span class="radio-label ml-2">D. Nabi Ibrahim AS</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div id="question3" class="question bg-gray-800 shadow-lg rounded-lg p-4 no-select hidden">
+                    <!-- Konten Soal -->
+                    <div class="mb-4">
+                        <p class="text-white text-sm">Soal <span class="font-bold">3</span></p>
+                        <a href="">
+                            <p class="text-gray-400 text-sm mt-2 mb-2"><i class="far fa-flag" style="color: #b1b2b4;"></i> Jawaban tersimpan</p>
+                        </a>
+                        <p class="text-gray-400 text-xs mb-3">10 Point per soal</p>
+                    </div>
+                    <!-- Teks Soal dan Gambar -->
+                    <div class="mb-4">
+                        <div class="flex mb-4">
+                            <img src="https://via.placeholder.com/150" alt="Question Image" class="w-40 h-auto object-cover rounded-lg">
+                        </div>
+                        <p class="text-white text-base">Siapa tuhan mu?</p>
+                    </div>
+                    <!-- Pilihan Jawaban -->
+                    <div class="text-gray-400 text-sm">
+                        <p class="mb-2">Pilih salah satu:</p>
+                        <div class="flex flex-col space-y-2">
+                            <label class="custom-radio">
+                                <input type="radio" name="question1" value="A">
+                                <span class="radio-label ml-2">A. Allah SWT</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question1" value="B">
+                                <span class="radio-label ml-2">B. Yesus Kristus</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question1" value="C">
+                                <span class="radio-label ml-2">C. Kak Gem</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question1" value="D">
+                                <span class="radio-label ml-2">D. Madrid</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="question1" value="E">
+                                <span class="radio-label ml-2">E. Pak Vinsen</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Card -->
+            <div id="navigation-card" class="md:w-1/4 mt-6 md:mt-0 bg-gray-800 p-4 rounded-lg shadow-lg flex flex-col">
+                <h2 class="text-white text-lg font-semibold mb-4">Question Navigation</h2>
+                <div id="navigation-buttons" class="flex flex-wrap gap-2 mb-4">
+                    <!-- Navigation Buttons will be generated here -->
+                </div>
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between mt-4">
+                    <button id="back-button" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded hidden" onclick="showPreviousQuestion()">
+                        <i class="fas fa-chevron-left"></i> Back
+                    </button>
+                    <button id="next-button" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" onclick="showNextQuestion()">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+        
+        
+
+    <script>
+        function toggleDropdown(button) {
+            const dropdownContent = button.nextElementSibling;
+            dropdownContent.classList.toggle('show');
+            button.classList.toggle('open');
+        }
+        
+    </script>
+
+    <script>
+        const totalQuestions = 3; // Set this to the total number of questions
+        const navigationContainer = document.getElementById('navigation-buttons');
+        let currentQuestion = 1; // Initialize the first question
+
+        // Function to generate navigation buttons
+        function generateNavigationButtons() {
+            navigationContainer.innerHTML = ''; // Clear existing buttons
+            for (let i = 1; i <= totalQuestions; i++) {
+                const button = document.createElement('button');
+                button.className = 'w-8 h-8 flex items-center hover:bg-red-500 shadow justify-center bg-gray-600 text-white rounded-full';
+                button.innerText = i;
+                button.onclick = () => showQuestion(i);
+                navigationContainer.appendChild(button);
+            }
+        }
+
+        // Function to show a specific question
+        function showQuestion(questionNumber) {
+            const questions = document.querySelectorAll('.question');
+            questions.forEach(q => q.classList.add('hidden'));
+            document.getElementById(`question${questionNumber}`).classList.remove('hidden');
+            currentQuestion = questionNumber; // Update the current question
+
+            // Update button visibility
+            updateButtonVisibility();
+        }
+
+        // Function to show the next question
+        function showNextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                showQuestion(currentQuestion + 1);
+            }
+        }
+
+        // Function to show the previous question
+        function showPreviousQuestion() {
+            if (currentQuestion > 1) {
+                showQuestion(currentQuestion - 1);
+            }
+        }
+
+        // Function to update button visibility
+        function updateButtonVisibility() {
+            document.getElementById('back-button').classList.toggle('hidden', currentQuestion === 1);
+            document.getElementById('next-button').classList.toggle('hidden', currentQuestion === totalQuestions);
+        }
+
+        // Initialize buttons and visibility
+        generateNavigationButtons();
+        showQuestion(currentQuestion); // Show the first question initially
+    </script>
+
+</body>
+</html>

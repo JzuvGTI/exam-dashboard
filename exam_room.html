@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Alpine.js for Live Search -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2" defer></script>
+    <style>
+        .toast {
+            display: none;
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background-color: #dc2626; /* Red background */
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            z-index: 9999;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .toast.show {
+            display: block;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            pointer-events: none;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.5rem;
+            pointer-events: none;
+        }
+
+        @media print {
+            .no-screenshot {
+                display: none !important;
+            }
+        }
+        .no-select {
+            user-select: none; /* Prevent text selection */
+            -webkit-user-select: none; /* Chrome/Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            -webkit-touch-callout: none; /* Prevent callout on touch devices */
+        }
+        .no-touch {
+            touch-action: none;
+        }
+
+        /* Custom styles for layout */
+        .fixed-right {
+            position: -webkit-sticky; /* For Safari */
+            position: sticky;
+            top: 1rem;
+            right: 1rem;
+            height: calc(100vh - 2rem);
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .fixed-right {
+                position: relative;
+                top: auto;
+                right: auto;
+                height: auto;
+                margin-top: 1rem;
+            }
+        }
+
+        .custom-radio {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .custom-radio input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .custom-radio .radio-label {
+            position: relative;
+            padding-left: 2rem;
+            display: inline-block;
+            line-height: 1.5;
+        }
+
+        .custom-radio .radio-label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #4A5568;
+            border-radius: 50%;
+            background-color: #1A202C;
+        }
+
+        .custom-radio input:checked ~ .radio-label::before {
+            background-color: #3B82F6;
+            border-color: #3B82F6;
+        }
+
+        .custom-radio input:checked ~ .radio-label::after {
+            content: '';
+            position: absolute;
+            left: 0.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background-color: #FFFFFF;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-200 no-touch">
+
+    <!-- Mobile Menu Button - Only visible on mobile -->
+    <div class="md:hidden flex items-center p-4 bg-gray-800">
+        <!-- Logo -->
+        <img src="https://via.placeholder.com/40" alt="Logo" class="w-10 h-10 rounded-full mr-3">
+        <!-- Text -->
+        <span class="text-xl font-bold">Admin Dashboard</span>
+    </div>
+
+    <div class="flex flex-col md:flex-row">
+        <div id="toast" class="toast">
+            Tidak bisa untuk melakukan aktivitas tersebut
+        </div>
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-gray-800 h-screen md:sticky md:top-0 md:flex md:flex-col md:justify-between transition-transform transform md:translate-x-0 -translate-x-full md:block fixed z-40">
+            <div id="sidebar-content" class="flex flex-col h-full">
+                <div id="profile" class="px-6 py-4 bg-gray-900">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">P</div>
+                        <div class="text-sm text-gray-300">
+                            <p class="font-medium">Username</p>
+                            <p class="text-xs">Admin</p>
+                        </div>
+                    </div>
+                </div>
+                <nav class="mt-5 flex-1 overflow-y-auto">
+                    <ul class="space-y-2">
+                        <!-- Menu Items -->
+                        <li class="px-6 py-3 hover:bg-gray-700 rounded-lg">
+                            <a href="index.html" class="flex items-center">
+                                <i class="fas fa-tachometer-alt mr-3"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gray-700 rounded-lg">
+                            <a href="form.html" class="flex items-center">
+                                <i class="fab fa-wpforms mr-3"></i>
+                                <span>Form</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gray-700 rounded-lg">
+                            <a href="table.html" class="flex items-center">
+                                <i class="fas fa-table mr-3"></i>
+                                <span>Table</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gray-700 rounded-lg">
+                            <a href="card.html" class="flex items-center">
+                                <i class="fas fa-th mr-3"></i>
+                                <span>Card</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gray-700 rounded-lg">
+                            <a href="editor.html" class="flex items-center">
+                                <i class="fas fa-code mr-3"></i>
+                                <span>Code Editor</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gray-700 rounded-lg">
+                            <a href="#" class="flex items-center">
+                                <i class="fas fa-cogs mr-3"></i>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gray-700 rounded-lg">
+                            <a href="#" class="flex items-center">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- Sidebar Close Button -->
+                <button id="sidebar-close" class="absolute top-2 right-2 md:hidden text-gray-300 focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+            <main class="flex-1 p-6 mb-16 md:mb-0 flex flex-col">
+                <div class="flex items-center justify-between mb-6">
+                    <h1 class="text-3xl font-semibold">Exam Room</h1>
+                </div>
+
+                <!-- Flex Container for Questions and Navigation -->
+                <div class="flex flex-col md:flex-row w-full md:space-x-6">
+                    <!-- Question Container -->
+                    <div id="question-container" class="flex-1 space-y-4">
+                        <!-- Question 1 -->
+                        <div id="question1" class="question bg-gray-800 shadow-lg rounded-lg p-4 no-select">
+                            <div class="mb-4">
+                                <p class="text-white text-sm">Soal <span class="font-bold">1</span></p>
+                                <a href="">
+                                    <p class="text-gray-400 text-sm mt-2 mb-2"><i class="far fa-flag" style="color: #b1b2b4;"></i> Jawaban tersimpan</p>
+                                </a>
+                                <p class="text-gray-400 text-xs mb-3">10 Point per soal</p>
+                            </div>
+                            <!-- Teks Soal dan Gambar -->
+                            <div class="mb-4">
+                                <p class="text-white text-base">Siapa nabi terakhir?</p>
+                            </div>
+                            <!-- Pilihan Jawaban -->
+                            <div class="text-gray-400 text-sm">
+                                <p class="mb-2">Pilih salah satu:</p>
+                                <div class="flex flex-col space-y-2">
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="A">
+                                        <span class="radio-label ml-2">A. Nabi Musa</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="B">
+                                        <span class="radio-label ml-2">B. Nabi Isa</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="C">
+                                        <span class="radio-label ml-2">C. Nabi Muhammad</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="D">
+                                        <span class="radio-label ml-2">D. Nabi Nuh</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question 2 -->
+                        <div id="question2" class="question bg-gray-800 shadow-lg rounded-lg p-4 no-select hidden">
+                            <div class="mb-4">
+                                <p class="text-white text-sm">Soal <span class="font-bold">2</span></p>
+                                <a href="">
+                                    <p class="text-gray-400 text-sm mt-2 mb-2"><i class="far fa-flag" style="color: #b1b2b4;"></i> Jawaban tersimpan</p>
+                                </a>
+                                <p class="text-gray-400 text-xs mb-3">10 Point per soal</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-white text-base">Siapakah Nabi terakhir dalam Islam?</p>
+                            </div>
+                            <div class="text-gray-400 text-sm">
+                                <p class="mb-2">Pilih salah satu:</p>
+                                <div class="flex flex-col space-y-2">
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="A">
+                                        <span class="radio-label ml-2">A. Nabi Musa AS</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="B">
+                                        <span class="radio-label ml-2">B. Nabi Isa AS</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="C">
+                                        <span class="radio-label ml-2">C. Nabi Muhammad SAW</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question2" value="D">
+                                        <span class="radio-label ml-2">D. Nabi Ibrahim AS</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question 3 -->
+                        <div id="question3" class="question bg-gray-800 shadow-lg rounded-lg p-4 no-select hidden">
+                            <!-- Konten Soal -->
+                            <div class="mb-4">
+                                <p class="text-white text-sm">Soal <span class="font-bold">3</span></p>
+                                <a href="">
+                                    <p class="text-gray-400 text-sm mt-2 mb-2"><i class="far fa-flag" style="color: #b1b2b4;"></i> Jawaban tersimpan</p>
+                                </a>
+                                <p class="text-gray-400 text-xs mb-3">10 Point per soal</p>
+                            </div>
+                            <!-- Teks Soal dan Gambar -->
+                            <div class="mb-4">
+                                <div class="flex mb-4">
+                                    <img src="https://via.placeholder.com/150" alt="Question Image" class="w-40 h-auto object-cover rounded-lg">
+                                </div>
+                                <p class="text-white text-base">Siapa tuhan mu?</p>
+                            </div>
+                            <!-- Pilihan Jawaban -->
+                            <div class="text-gray-400 text-sm">
+                                <p class="mb-2">Pilih salah satu:</p>
+                                <div class="flex flex-col space-y-2">
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question1" value="A">
+                                        <span class="radio-label ml-2">A. Allah SWT</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question1" value="B">
+                                        <span class="radio-label ml-2">B. Yesus Kristus</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question1" value="C">
+                                        <span class="radio-label ml-2">C. Kak Gem</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question1" value="D">
+                                        <span class="radio-label ml-2">D. Madrid</span>
+                                    </label>
+                                    <label class="custom-radio">
+                                        <input type="radio" name="question1" value="E">
+                                        <span class="radio-label ml-2">E. Pak Vinsen</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Card -->
+                    <div id="navigation-card" class="md:w-1/4 mt-6 md:mt-0 bg-gray-800 p-4 rounded-lg shadow-lg flex flex-col">
+                        <h2 class="text-white text-lg font-semibold mb-4">Question Navigation</h2>
+                        <div id="navigation-buttons" class="flex flex-wrap gap-2 mb-4">
+                            <!-- Navigation Buttons will be generated here -->
+                        </div>
+                        <!-- Navigation Buttons -->
+                        <div class="flex justify-between mt-4">
+                            <button id="back-button" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded hidden" onclick="showPreviousQuestion()">
+                                <i class="fas fa-chevron-left"></i> Back
+                            </button>
+                            <button id="next-button" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" onclick="showNextQuestion()">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                
+            </main>
+
+        <!-- Mobile Footer -->
+        <footer class="md:hidden fixed bottom-0 w-full bg-gray-800 text-gray-200 flex justify-around items-center h-16">
+            <a href="index.html">
+                <i class="fas fa-tachometer-alt text-lg"></i>
+            </a>
+            <a href="table.html">
+                <i class="fas fa-table text-lg"></i>
+            </a>
+            <a href="form.html">
+                <i class="fab fa-wpforms text-lg"></i>
+            </a>
+            <a href="#">
+                <i class="fas fa-cogs text-lg"></i>
+            </a>
+            <a href="#">
+                <i class="fas fa-sign-out-alt text-lg"></i>
+            </a>
+        </footer>
+    </div>
+    <script>
+        const totalQuestions = 3; // Set this to the total number of questions
+        const navigationContainer = document.getElementById('navigation-buttons');
+        let currentQuestion = 1; // Initialize the first question
+
+        // Function to generate navigation buttons
+        function generateNavigationButtons() {
+            navigationContainer.innerHTML = ''; // Clear existing buttons
+            for (let i = 1; i <= totalQuestions; i++) {
+                const button = document.createElement('button');
+                button.className = 'w-8 h-8 flex items-center hover:bg-red-500 shadow justify-center bg-gray-600 text-white rounded-full';
+                button.innerText = i;
+                button.onclick = () => showQuestion(i);
+                navigationContainer.appendChild(button);
+            }
+        }
+
+        // Function to show a specific question
+        function showQuestion(questionNumber) {
+            const questions = document.querySelectorAll('.question');
+            questions.forEach(q => q.classList.add('hidden'));
+            document.getElementById(`question${questionNumber}`).classList.remove('hidden');
+            currentQuestion = questionNumber; // Update the current question
+
+            // Update button visibility
+            updateButtonVisibility();
+        }
+
+        // Function to show the next question
+        function showNextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                showQuestion(currentQuestion + 1);
+            }
+        }
+
+        // Function to show the previous question
+        function showPreviousQuestion() {
+            if (currentQuestion > 1) {
+                showQuestion(currentQuestion - 1);
+            }
+        }
+
+        // Function to update button visibility
+        function updateButtonVisibility() {
+            document.getElementById('back-button').classList.toggle('hidden', currentQuestion === 1);
+            document.getElementById('next-button').classList.toggle('hidden', currentQuestion === totalQuestions);
+        }
+
+        // Initialize buttons and visibility
+        generateNavigationButtons();
+        showQuestion(currentQuestion); // Show the first question initially
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            showToast("Screenshot tidak diperbolehkan");
+        });
+
+        document.addEventListener('copy', function (e) {
+            e.preventDefault();
+            showToast("Tidak bisa menyalin teks");
+        });
+
+        document.addEventListener('fullscreenchange', function () {
+            if (document.fullscreenElement) {
+                showToast("Screenshots tidak diperbolehkan dalam mode layar penuh.");
+            }
+        });
+
+        function isMobileDevice() {
+            return /Mobi|Android/i.test(navigator.userAgent);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (isMobileDevice()) {
+                document.getElementById('mobile-overlay').style.display = 'block';
+            }
+        });
+
+        function showToast(message) {
+            var toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.bottom = '1rem';
+            toast.style.right = '1rem';
+            toast.style.backgroundColor = '#dc2626';
+            toast.style.color = 'white';
+            toast.style.padding = '1rem';
+            toast.style.borderRadius = '0.5rem';
+            toast.style.zIndex = '9999';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(function () {
+                document.body.removeChild(toast);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

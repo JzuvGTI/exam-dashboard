@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Profil</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .profile-image {
+            border-radius: 50%;
+            border: 5px solid #8b5cf6; /* Border color purple */
+        }
+        .input-file {
+            display: none;
+        }
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            padding: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .overlay:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        .profile-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: #1f2937;
+            border: 2px solid #8b5cf6; /* Border color purple */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(16, 8, 8, 0.1);
+        }
+        .section {
+            background-color: #1f2937;
+            border: 2px solid #8b5cf6; /* Border color purple */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        .input-field {
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #8b5cf6;
+            background-color: #1f2937;
+        }
+        .button-primary {
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .button-primary:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gray-800 p-4 flex items-center justify-between shadow-lg">
+        <h1 class="text-3xl font-bold">Dashboard Profil</h1>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-grow p-6 flex flex-col lg:flex-row gap-6">
+        <!-- Left Section: Profile Picture and Info -->
+        <div class="flex-shrink-0 w-full lg:w-1/3">
+            <div class="card mx-auto mb-6 flex flex-col items-center text-center">
+                <div class="profile-container mb-4">
+                    <img id="profileImage" src="https://via.placeholder.com/150" alt="Profile Image" class="profile-image w-full h-full object-cover">
+                    <label for="fileInput" class="overlay flex items-center justify-center">
+                        <span>Upload</span>
+                    </label>
+                    <input id="fileInput" type="file" class="input-file" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <h2 class="text-2xl font-bold mb-2">John Doe</h2>
+                <p class="text-sm text-gray-400 mb-1">NIS: 123456789</p>
+                <p class="text-sm text-gray-400 mb-1">Username: johndoe</p>
+                <p class="text-sm text-gray-400 mb-1">Kelas: X</p>
+                <p class="text-sm text-gray-400">Jurusan: TKJ</p>
+            </div>
+        </div>
+
+        <!-- Right Section: Form and Additional Information -->
+        <div class="flex-grow">
+            <div class="section">
+                <h3 class="text-lg font-semibold mb-4">Edit Profil</h3>
+                <form action="#" method="POST">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" for="name">Nama Lengkap</label>
+                        <input class="w-full p-3 bg-gray-700 border border-gray-600 rounded input-field" type="text" id="name" name="name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" for="email">Email</label>
+                        <input class="w-full p-3 bg-gray-700 border border-gray-600 rounded input-field" type="email" id="email" name="email" required readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" for="username">Username</label>
+                        <input class="w-full p-3 bg-gray-700 border border-gray-600 rounded input-field" type="text" id="username" name="username" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" for="password">Password Baru</label>
+                        <input class="w-full p-3 bg-gray-700 border border-gray-600 rounded input-field" type="password" id="password" name="password">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" for="nis">NIS</label>
+                        <input class="w-full p-3 bg-gray-700 border border-gray-600 rounded input-field" type="text" id="nis" name="nis">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" for="class">Kelas</label>
+                        <select class="w-full p-3 bg-gray-700 border border-gray-600 rounded input-field" id="class" name="class">
+                            <option value="X">X</option>
+                            <option value="XI">XI</option>
+                            <option value="XII">XII</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" for="major">Jurusan</label>
+                        <select class="w-full p-3 bg-gray-700 border border-gray-600 rounded input-field" id="major" name="major">
+                            <option value="TKJ">TKJ</option>
+                            <option value="RPL">RPL</option>
+                            <option value="BR">BR</option>
+                            <option value="AP">AP</option>
+                            <option value="AK">AK</option>
+                        </select>
+                    </div>
+                    <button class="w-full button-primary" type="submit">Simpan Perubahan</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Optional: Additional section if needed -->
+    <aside class="bg-gray-800 p-4 text-center">
+        <h3 class="text-lg font-semibold mb-2">Informasi Tambahan</h3>
+        <p>Section for additional information or widgets.</p>
+    </aside>
+
+    <script>
+        function previewImage(event) {
+            const fileInput = event.target;
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profileImage = document.getElementById('profileImage');
+                    profileImage.src = e.target.result;
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

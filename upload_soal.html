@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Ujian Online</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.12.0/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white" x-data="{ open: false }" @resize.window="if (window.innerWidth >= 1024) open = true; else open = false">
+    <!-- Overlay -->
+    <div x-show="open" @click="open = false" :class="{'overlay-open': open, 'overlay': true}" class="fixed inset-0"></div>
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4 shadow-md flex justify-between items-center z-30 relative">
+        <div class="flex items-center">
+            <!-- Burger Menu Button (Visible on Mobile) -->
+            <button @click="open = !open" class="text-white mr-4 focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <!-- Logo -->
+            <div class="text-2xl font-bold">Admin Dashboard</div>
+        </div>
+        <!-- Icons and Profile Picture -->
+        <div class="flex items-center space-x-4">
+            <!-- Only show on larger screens -->
+            <div class="hidden lg:block text-sm">Admin User</div>
+            <!-- Icons (Visible on Mobile and Larger Screens) -->
+            <div class="flex space-x-4">
+                <button class="focus:outline-none">
+                    <i class="fas fa-bell text-white text-xl"></i>
+                </button>
+                <button class="focus:outline-none">
+                    <i class="fas fa-envelope text-white text-xl"></i>
+                </button>
+                <!-- Profile Image -->
+                <img src="https://via.placeholder.com/40" class="rounded-full w-10 h-10" alt="Profile Image">
+            </div>
+        </div>
+    </nav>
+
+
+    <aside :class="{'sidebar-open': open}" class="sidebar" id="sidebar">
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-picture">
+                <img src="https://via.placeholder.com/50" alt="Profile Picture">
+                <span class="status-indicator status-online"></span> <!-- Replace with status-offline for offline -->
+            </div>
+            <div>
+                <div class="username">John Doe</div>
+                <div class="role-badge">Admin</div>
+            </div>
+        </div>
+        <!-- Navigation Links -->
+        <div class="sidebar-buttons">
+            <a href="dashboard.html" class="sidebar-button"><i class="fas fa-home"></i> Beranda Situs</a>
+            <a href="add-teacher.html" class="sidebar-button"><i class="fas fa-calendar-alt"></i> Tambah Guru Mapel</a>
+            <a href="upload_soal.html" class="sidebar-button"><i class="fas fa-file-alt"></i> Soal Ujian</a>
+            <a href="view-question.html" class="sidebar-button"><i class="fas fa-graduation-cap"></i> Kursus Saya</a>
+            <a href="settings/profile.html" class="sidebar-button"><i class="fas fa-users"></i> Edit Profile</a>
+        </div>
+        <div class="sidebar-dropdown">
+            <button class="dropdown-button" onclick="toggleDropdown(this)">
+                <i class="fas fa-cog"></i> Pengaturan
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </button>
+            <div class="sidebar-dropdown-content">
+                <a href="settings/profile.html"><span class="dropdown-icon"></span> Pengaturan Akun</a>
+                <a href="#"><span class="dropdown-icon"></span> Keamanan</a>
+                <a href="#"><span class="dropdown-icon"></span> Privasi</a>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="content-area flex-1 p-4">
+        <!-- Search and Action Buttons -->
+        <div class="flex flex-col md:flex-row items-center justify-between mb-4 space-y-2 md:space-y-0">
+            <!-- Live Search -->
+            <div class="flex items-center w-full md:w-auto">
+                <input type="text" id="searchInput" placeholder="Cari soal..." class="p-2 bg-gray-800 text-white rounded w-full md:w-64">
+            </div>
+            <!-- Action Buttons -->
+            <div class="flex space-x-2">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded btn-sm flex items-center">
+                    <i class="fas fa-upload mr-2"></i> Upload Excel
+                </button>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded btn-sm flex items-center">
+                    <i class="fas fa-download mr-2"></i> Download Example
+                </button>
+                <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded btn-sm flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Tambah Soal
+                </button>
+            </div>
+        </div>
+    
+        <!-- Exam Questions Table -->
+        <div class="bg-gray-800 p-4 rounded shadow-md overflow-x-auto">
+            <div class="flex items-center space-x-4 mb-3">
+                <select id="pagination" class="px-4 py-2 rounded bg-gray-700 text-gray-200">
+                    <option value="10">10 Data</option>
+                    <option value="20">20 Data</option>
+                    <option value="50">50 Data</option>
+                </select>
+            </div>
+            <table class="w-full text-sm text-left" id="dataTable">
+                <thead>
+                    <tr class="bg-gray-700 text-white">
+                        <th class="p-2">No</th>
+                        <th class="p-2">Soal</th>
+                        <th class="p-2">Opsi A</th>
+                        <th class="p-2">Opsi B</th>
+                        <th class="p-2">Opsi C</th>
+                        <th class="p-2">Opsi D</th>
+                        <th class="p-2">Jawaban</th>
+                        <th class="p-2">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example Row -->
+                    <tr class="border-b border-gray-700">
+                        <td class="p-2">1</td>
+                        <td class="p-2">Siapa membuat Javascript?</td>
+                        <td class="p-2">Opsi A</td>
+                        <td class="p-2">Opsi B</td>
+                        <td class="p-2">Opsi C</td>
+                        <td class="p-2">Opsi D</td>
+                        <td class="p-2">A</td>
+                        <td class="p-2 flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-400"><i class="fas fa-edit"></i></button>
+                            <button class="text-green-500 hover:text-green-400"><i class="fas fa-eye"></i></button>
+                            <button class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-gray-700">
+                        <td class="p-2">2</td>
+                        <td class="p-2">Kapan HTML Ditemukan?</td>
+                        <td class="p-2">Opsi A</td>
+                        <td class="p-2">Opsi B</td>
+                        <td class="p-2">Opsi C</td>
+                        <td class="p-2">Opsi D</td>
+                        <td class="p-2">A</td>
+                        <td class="p-2 flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-400"><i class="fas fa-edit"></i></button>
+                            <button class="text-green-500 hover:text-green-400"><i class="fas fa-eye"></i></button>
+                            <button class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-gray-700">
+                        <td class="p-2">3</td>
+                        <td class="p-2">Kapan Indonesia Merdeka?</td>
+                        <td class="p-2">Opsi A</td>
+                        <td class="p-2">Opsi B</td>
+                        <td class="p-2">Opsi C</td>
+                        <td class="p-2">Opsi D</td>
+                        <td class="p-2">A</td>
+                        <td class="p-2 flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-400"><i class="fas fa-edit"></i></button>
+                            <button class="text-green-500 hover:text-green-400"><i class="fas fa-eye"></i></button>
+                            <button class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-4">
+            <button id="prevPage" class="text-gray-400 hover:text-gray-300">&larr; Previous</button>
+            <div class="text-sm text-gray-400" id="showEntries">Showing 1 to 10 of 10 entries</div>
+            <button id="nextPage" class="text-gray-400 hover:text-gray-300">Next &rarr;</button>
+        </div>
+    </main>
+        
+        
+    <script>
+        function toggleDropdown(button) {
+            const dropdownContent = button.nextElementSibling;
+            dropdownContent.classList.toggle('show');
+            button.classList.toggle('open');
+        }
+        
+    </script>
+    <script>
+        
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx1 = document.getElementById('examPerformanceChart').getContext('2d');
+            var examPerformanceChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Math', 'Science', 'English', 'History', 'Geography'],
+                    datasets: [{
+                        label: 'Scores',
+                        data: [85, 90, 78, 88, 92],
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var ctx2 = document.getElementById('studentParticipationChart').getContext('2d');
+            var studentParticipationChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Participated', 'Not Participated'],
+                    datasets: [{
+                        label: 'Participation',
+                        data: [65, 35],
+                        backgroundColor: ['rgba(59, 130, 246, 0.5)', 'rgba(107, 114, 128, 0.5)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(107, 114, 128, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Adjust sidebar on window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                document.querySelector('aside').classList.add('sidebar-open');
+                document.querySelector('.overlay').classList.remove('overlay-open');
+                document.querySelector('.content-area').classList.add('sidebar-open');
+            } else {
+                document.querySelector('aside').classList.remove('sidebar-open');
+                document.querySelector('.overlay').classList.remove('overlay-open');
+                document.querySelector('.content-area').classList.remove('sidebar-open');
+            }
+        });
+    </script>
+
+    <script>
+        //untuk table
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('#dataTable tbody');
+            const searchInput = document.querySelector('#searchInput');
+            const paginationSelect = document.querySelector('#pagination');
+            const prevPageButton = document.querySelector('#prevPage');
+            const nextPageButton = document.querySelector('#nextPage');
+            const showEntries = document.querySelector('#showEntries');
+
+            let currentPage = 1;
+            let rowsPerPage = parseInt(paginationSelect.value, 10);
+
+            // Function to filter rows based on search input
+            function filterRows() {
+                const query = searchInput.value.toLowerCase();
+                const rows = table.querySelectorAll('tr');
+                const filteredRows = Array.from(rows).filter(row => {
+                    const cells = row.querySelectorAll('td');
+                    const text = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
+                    return text.includes(query);
+                });
+
+                return filteredRows;
+            }
+
+            // Function to update table pagination
+            function updatePagination() {
+                const filteredRows = filterRows();
+                const totalRows = filteredRows.length;
+                const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = Math.min(start + rowsPerPage, totalRows);
+
+                // Hide all rows first
+                Array.from(table.querySelectorAll('tr')).forEach(row => row.style.display = 'none');
+
+                // Show only rows for the current page
+                filteredRows.slice(start, end).forEach(row => row.style.display = '');
+
+                prevPageButton.disabled = currentPage === 1;
+                nextPageButton.disabled = currentPage === totalPages;
+
+                // Update "Show entries" text
+                showEntries.textContent = `Showing ${start + 1} to ${end} of ${totalRows} entries`;
+            }
+
+            // Event listeners
+            searchInput.addEventListener('input', function() {
+                currentPage = 1;
+                updatePagination();
+            });
+
+            paginationSelect.addEventListener('change', function() {
+                rowsPerPage = parseInt(this.value, 10);
+                currentPage = 1;
+                updatePagination();
+            });
+
+            prevPageButton.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+
+            nextPageButton.addEventListener('click', function() {
+                const totalRows = filterRows().length;
+                const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+
+            // Initial setup
+            updatePagination();
+        });
+
+    </script>
+</body>
+</html>
